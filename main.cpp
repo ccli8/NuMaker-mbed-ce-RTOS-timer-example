@@ -7,17 +7,22 @@ DigitalOut LED[3] = {
     DigitalOut(LED3)
 };
 
-void blink(void const *n) {
+Ticker led_1_ticker;
+Ticker led_2_ticker;
+Ticker led_3_ticker;
+
+void blink(void const *n)
+{
     LED[(int)n] = !LED[(int)n];
 }
 
-int main() {
-    RtosTimer led_1_timer(blink, osTimerPeriodic, (void *)0);
-    RtosTimer led_2_timer(blink, osTimerPeriodic, (void *)1);
-    RtosTimer led_3_timer(blink, osTimerPeriodic, (void *)2);
-        
-    led_1_timer.start(2000);
-    led_2_timer.start(1000);
-    led_3_timer.start(500);
-    Thread::wait(osWaitForever);
+int main()
+{
+    led_1_ticker.attach(callback(blink, (void *)0), 2000ms);
+    led_2_ticker.attach(callback(blink, (void *)1), 1000ms);
+    led_3_ticker.attach(callback(blink, (void *)2), 500ms);
+
+    while (1) {
+        ThisThread::sleep_for(2000ms);
+    }
 }
